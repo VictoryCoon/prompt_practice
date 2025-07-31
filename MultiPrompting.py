@@ -145,14 +145,30 @@ def query_to_prompt(query):
     answer = chatgpt_generate(api_query)
     return answer
 
-query = "이번 지원자의 핵심가치와, 자기소개서 바탕의 면접질문을 3개 생성하고싶어."
-first_answer = query_to_prompt(query)
-prompts = [prompt_properly, prompt_critical, prompt_potential, prompt_qeustion]
-prompt_number_list = eval(first_answer)
+def get_answer(query):
+    first_answer = query_to_prompt(query)
+    prompts = [prompt_properly, prompt_critical, prompt_potential, prompt_qeustion]
+    prompt_number_list = eval(first_answer)
 
-answer_list = []
-for num in prompt_number_list:
-    answer_list.append(chatgpt_generate(prompts[num-1]+resume))
+    answer_list = []
+    for num in prompt_number_list:
+        answer_list.append(chatgpt_generate(prompts[num-1]+resume))
+    return answer_list
 
-for answer in answer_list:
-    print(answer)
+st.title("🥑System Of Resume Review")
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for message in st.session_state.messages:
+    with st.chat_message(message['role']):
+        st.markdown(message['content'])
+
+if prompt := st.chat_input("Input want to search employee"):
+    st.chat_message("user").markdown(prompt)
+    st.session_state.messages.append({"role":"user","content":prompt})
+    response = f"Bot : {get_answer(prompt.strip())}"
+    with st.chat_message("assistant"):
+        st.markdown(response)
+
+    st.session_state.messages.append({"role":"assistant","content":response})
