@@ -103,7 +103,7 @@ def go_db(sql):
     connection = pymysql.connect(
         host="127.0.0.1",
         user='victory',
-        password="1414036",
+        password="${PWD}",
         db='victory',
         charset='utf8mb4'
     )
